@@ -4,9 +4,10 @@ from watermark_interface import WatermarkInterface
 
 class WatermarkMenu(ttk.Frame):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, canvas, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
 
+        self.canvas = canvas
         self.start_button = ttk.Button(self, text="W", command=self.open_menu)
         self.menu_opened = False
         self.menu = None
@@ -24,7 +25,7 @@ class WatermarkMenu(ttk.Frame):
             self.menu_opened = False
 
     def create_menu(self):
-        menu = WatermarkInterface()
+        menu = WatermarkInterface(canvas=self.canvas)
         menu.title("Watermark")
         return menu
 
