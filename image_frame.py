@@ -29,6 +29,11 @@ class ImageFrame(ttk.Frame):
         self.loaded_image = ImageTk.PhotoImage(resized_image)
         # Load image to canvas
         self.canvas.create_image(5, 5, image=self.loaded_image, anchor=tk.NW)
+
+        # Find all texts and put them on top of the image while resizing
+        for item in self.canvas.find_withtag('text'):
+            self.canvas.lift(item)
+
         # Update canvas
         self.canvas.update()
 

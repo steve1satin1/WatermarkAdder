@@ -44,13 +44,24 @@ class WatermarkInterface(tk.Toplevel):
         # print(f"Text: {self.text.get()}\nFont: {self.font_selected.get()}\nSize: {self.size.get()}\nColor: {self.color[1]}")
 
     def done(self):
-        self.canvas.create_text(100, 100,
+        self.text_created = self.canvas.create_text(100, 100,
                                 text=self.text.get(),
                                 font=(self.font_selected.get(), self.size.get()),
-                                fill=self.color[1],)
+                                fill=self.color[1],
+                                tags='text')
+        self.canvas.tag_bind(self.text_created, "<Button-1>", self.drag_start)
+        self.canvas.tag_bind(self.text_created, '<B1-Motion>', self.mov)
         self.canvas.update()
-        print("called")
 
+    def drag_start(self, event):
+        widget = event.widget
+        widget.startX = event.x
+        widget.startY = event.y
 
+    def mov(self, event):
+        widget = event.widget
+        widget.move(self.text_created, event.x - widget.startX, event.y - widget.startY)
+        widget.startX, widget.startY = event.x, event.y  # update previous position
+        self.canvas.update()
 
 
