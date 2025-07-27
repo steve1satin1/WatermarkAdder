@@ -8,9 +8,12 @@ class WatermarkMenu(ttk.Frame):
         super().__init__(master, *args, **kwargs)
 
         self.canvas = canvas
-        self.start_button = ttk.Button(self, text="W", command=self.open_menu)
+        self.start_button = ttk.Button(self, text="Create Text", command=self.open_menu)
         self.menu_opened = False
         self.menu = None
+
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
 
     def open_menu(self):
