@@ -5,7 +5,7 @@ from text_item import TextItem
 from properties_frame import PropertiesFrame
 
 class WatermarkInterface(tk.Toplevel):
-    def __init__(self, canvas: tk.Canvas, text='Example text', font='Calibre', size=20, color='red',  *args, **kwargs):
+    def __init__(self, canvas: tk.Canvas, text='Example text', font='Calibre', size=20, color='red', rotation='0.0', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.menu_opened = True
@@ -55,17 +55,29 @@ class WatermarkInterface(tk.Toplevel):
         size_frame.grid(row=3, column=0, sticky=tk.NSEW, padx=5, pady=10)
         self.size_entry.grid(row=0, column=1, sticky=tk.NSEW)
 
+        # Rotation
+        self.rotation = tk.DoubleVar()
+        self.rotation.set(float(rotation))
+        rotation_frame = PropertiesFrame(self.frame, label='Rotation')
+        self.rotation_lb = ttk.Label(rotation_frame, text=self.update_scale_label(rotation), font=('Calibre', 10))
+        self.rotation_scale = ttk.Scale(rotation_frame, from_= -180, to= 180, orient=tk.HORIZONTAL, value=0,
+                                        variable=self.rotation, command=self.update_scale_label)
+        rotation_frame.grid(row=4, column=0, sticky=tk.NSEW, padx=5, pady=10)
+        self.rotation_scale.grid(row=0, column=1, sticky=tk.NSEW)
+        self.rotation_lb.grid(row=0, column=2, sticky=tk.NSEW)
+
+
         # Color
         self.color = tk.StringVar()
         self.color.set(color)
         color_frame = PropertiesFrame(self.frame, label='Color')
         self.color_button = tk.Button(color_frame, command=self.set_color, bg=color, fg=color)
         self.color_button.grid(row=0, column=1, sticky=tk.NSEW)
-        color_frame.grid(row=4, column=0, sticky=tk.NSEW, padx=5, pady=10)
+        color_frame.grid(row=5, column=0, sticky=tk.NSEW, padx=5, pady=10)
 
         self.frame.rowconfigure(5, minsize=50)
         self.done_button = ttk.Button(self.frame, command=self.done, text="Done")
-        self.done_button.grid(row=5, column=0, sticky=tk.NS)
+        self.done_button.grid(row=6, column=0, sticky=tk.NS)
 
     def create_fonts(self):
         choices = sorted([name for name in font.families()])
@@ -120,28 +132,31 @@ class WatermarkInterface(tk.Toplevel):
             'text': self.text.get(),
             'font': self.font_selected.get(),
             'size': self.size_entry.get(),
+            'angle': self.rotation.get(),
             'color': self.extract_color()
         }
         return properties
 
-    # def set_properties(self, properties):
-    #     """
-    #     Sets the properties set in the properties frame.
-    #     :param properties: Dictionary of properties set in the properties frame
-    #     :return: None
-    #     """
-    #     self.text.set(properties['text'])
-    #     self.font_selected.set(properties['font'])
-    #     self.size_entry.set(properties['size'])
-    #     self.color.set(properties['color'])
-
     def open_menu(self, canvas, properties, previous_text_properties: tuple):
         if not self.menu_opened:
-            self.__init__(canvas, properties['text'], properties['font'], properties['size'], properties['color'])
+            self.__init__(canvas, properties['text'], properties['font'], properties['size'], properties['color'], rotation=properties['angle'])
             self.previous_text_properties = previous_text_properties
 
     def on_closing(self):
         self.menu_opened = False
         self.destroy()
         print('closing menu')
+
+    def update_scale_label(self, val):
+        """
+        Updates the scale label. and also sets the rotation label when text first created or changes.
+        :param event: The widget event
+        :return: None
+        """
+        val = float(val)
+        val = round(val, 1)
+        try:
+            self.rotation_lb.config(text=f"{val}")
+        except:
+            return str(val)
 

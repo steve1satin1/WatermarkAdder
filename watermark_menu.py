@@ -17,22 +17,25 @@ class WatermarkMenu(ttk.Frame):
 
 
     def open_menu(self):
-        self.menu_opened += 1
-        if not self.menu_opened % 2 == 0:
-            # Mark menu opened
-            self.menu_opened = True
-            # Open menu
-            self.menu = self.create_menu()
-        else:
+        """
+        Controls the ``Create Text`` button. It Opens and closes the menu for the text creation.
+        :return: None
+        """
+        if self.menu and tk.Toplevel.winfo_exists(self.menu):
             self.menu.destroy()
+        else:
+            self.menu = self.create_menu()
 
     def create_menu(self):
+        """
+        Creates a Toplevel window of type WatermarkInterface that represents the menu for the text creation.
+        :return: WatermarkInterface object.
+        """
         menu = WatermarkInterface(canvas=self.canvas)
         menu.title("Watermark")
         return menu
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-
         self.start_button.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
 
