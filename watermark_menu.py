@@ -5,6 +5,13 @@ from watermark_interface import WatermarkInterface
 class WatermarkMenu(ttk.Frame):
 
     def __init__(self, master, canvas, *args, **kwargs):
+        """
+        A ttk.Frame containing the button that controls the text creation buttons.
+        :param master: The parent tkinter frame.
+        :param canvas: The canvas to draw on.
+        :param args: Additional positional arguments to pass to the ttk.Frame constructor.
+        :param kwargs: Additional keyword arguments to pass to the ttk.Frame constructor.
+        """
         super().__init__(master, *args, **kwargs)
 
         self.canvas = canvas

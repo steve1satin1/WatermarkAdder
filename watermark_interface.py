@@ -1,11 +1,22 @@
 from tkinter import ttk, font, colorchooser
 import tkinter as tk
-from Tools.demo.sortvisu import steps
 from text_item import TextItem
 from properties_frame import PropertiesFrame
 
 class WatermarkInterface(tk.Toplevel):
     def __init__(self, canvas: tk.Canvas, text='Example text', font='Calibre', size=20, color='red', rotation='0.0', *args, **kwargs):
+        """
+        The menu which the user can select the properties that he/she wants the text item to have.
+        It handles the text changes.
+        :param canvas: The canvas in which the text item will be created.
+        :param text: The text which the text item will contain. (For already created text items).
+        :param font: The text font (For already created text items).
+        :param size: The text size (For already created text items).
+        :param color: The text color (For already created text items).
+        :param rotation: The text rotation (For already created text items).
+        :param args: extra arguments passed to the tk.Toplevel() constructor.
+        :param kwargs: extra arguments passed to the tk.Toplevel() constructor.
+        """
         super().__init__(*args, **kwargs)
 
         self.menu_opened = True
@@ -79,45 +90,74 @@ class WatermarkInterface(tk.Toplevel):
         self.done_button = ttk.Button(self.frame, command=self.done, text="Done")
         self.done_button.grid(row=6, column=0, sticky=tk.NS)
 
+        self.text_item_id = None
+
     def create_fonts(self):
+        """
+        Creates the fonts list.
+        :return: None
+        """
         choices = sorted([name for name in font.families()])
         self.fonts_list['values'] = tuple(choices)
 
     def set_color(self):
+        """
+        Sets the color of the text.
+        :return:
+        """
         self.color = colorchooser.askcolor(initialcolor='#ff0000')
         self.color_button.config(fg=self.color[1], bg=self.color[1])
 
     def done(self):
+        """
+        Creates the text item when the user clicks 'Done'.
+        :param ev: The event that triggered the method.
+        :return: None
+        """
+        # For already created text items that the user wants to change.
         p_x = 100
         p_y = 100
+        # Check if there is already a text created from this menu and delete it for the new to add.
         if self.previous_text_properties:
             p_id = self.previous_text_properties[0]
-            p_x = self.previous_text_properties[1]
-            p_y = self.previous_text_properties[2]
+            p_x, p_y = self.canvas.coords(p_id)
             self.canvas.delete(p_id)
 
-        TextItem(self,
-                 self.canvas,
-                 p_x, p_y,
-                 tags='text')
-
+        # Create the new text item
+        self.text_item_id = TextItem(self, self.canvas, p_x, p_y, tags='text')
         self.menu_opened = False
         self.destroy()
 
+
+
+
+
     def create_sizes(self):
+        """
+        Creates the sizes list.
+        :return: None
+        """
         choices = [num for num in range(1, 100)]
         self.size_entry['values'] = tuple(choices)
 
     def font_selection_fun(self, ev):
+        """
+        Every time a user chooses a new font this function changes the font
+        in the text and font entry so that the change will be visible.
+        :param ev: the select font event from the fonts list.
+        :return: None
+        """
         self.fonts_list.configure(font=(self.font_selected.get(), 15))
         self.text_entry.config(font=(self.font_selected.get(), 15))
 
     def extract_color(self):
-        color = ''
-        try:
-            print("inside extract: ", self.color)
+        """
+        Extracts the color from the color pallet.
+        :return:
+        """
+        try: # If the color comes from the color pallet
             color = self.color[1]
-        except:
+        except: # else the color comes from the color string variable.
             color = self.color.get()
         print('returned color: ', color)
         return color
@@ -125,9 +165,8 @@ class WatermarkInterface(tk.Toplevel):
     def get_properties(self):
         """
         Gets the properties set in the properties frame
-        :return: dctionary of the properties in this form {'text': ..., 'font': ..., 'size': ..., 'color': ...}
+        :return: dictionary of the properties in this form {'text': ..., 'font': ..., 'size': ..., 'color': ...}
         """
-
         properties = {
             'text': self.text.get(),
             'font': self.font_selected.get(),
@@ -138,6 +177,13 @@ class WatermarkInterface(tk.Toplevel):
         return properties
 
     def open_menu(self, canvas, properties, previous_text_properties: tuple):
+        """
+        This method gets called from the text item when the user double clicks it.
+        :param canvas: The canvas in which the new text will be drawn.
+        :param properties: The properties of the text item which the user wants to change.
+        :param previous_text_properties: A tuple containing (text, x coord, y coord) from previous text.
+        :return:
+        """
         if not self.menu_opened:
             self.__init__(canvas, properties['text'], properties['font'], properties['size'], properties['color'], rotation=properties['angle'])
             self.previous_text_properties = previous_text_properties
@@ -145,7 +191,6 @@ class WatermarkInterface(tk.Toplevel):
     def on_closing(self):
         self.menu_opened = False
         self.destroy()
-        print('closing menu')
 
     def update_scale_label(self, val):
         """

@@ -1,8 +1,20 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from tkinter import Canvas
 
-class TextItem:
-    def __init__(self, menu, canvas: Canvas, x=100, y=100, tags='text'): #text="", font=(), fill='black', tags='text'):
+if TYPE_CHECKING:
+    from watermark_interface import WatermarkInterface
 
+class TextItem:
+    def __init__(self, menu: WatermarkInterface, canvas: Canvas, x=100, y=100, tags='text'): #text="", font=(), fill='black', tags='text'):
+        """
+        The text item that gets created from the watermark menu.
+        :param menu: WatermarkInterface object - the menu from which to create the text item.
+        :param canvas: The canvas to which the text item will be added.
+        :param x: The x position of the text item.
+        :param y: The y position of the text item.
+        :param tags: The tag of the text item.
+        """
         self.canvas = canvas
         self.menu_opened = False
         self.menu = menu
@@ -54,3 +66,6 @@ class TextItem:
         :return: None
         """
         self.menu.open_menu(self.canvas, self.properties, (self.text_created, *self.canvas.coords(self.text_created)))
+
+    def __repr__(self):
+        return self.text_created.__repr__()
